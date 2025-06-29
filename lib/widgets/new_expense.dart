@@ -9,6 +9,23 @@ class NewExpense extends StatefulWidget {
 
 class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _dateControllers = TextEditingController();
+
+  void _datePicker() {
+    final now = DateTime.now();
+    final firstDate = DateTime(2000, now.month, now.day);
+    showDatePicker(context: context, firstDate: firstDate, lastDate: now);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    _dateControllers.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,6 +36,43 @@ class _NewExpenseState extends State<NewExpense> {
             controller: _titleController,
             maxLength: 50,
             decoration: InputDecoration(label: Text('Title')),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    label: Text('Amount'),
+                    prefixText: '\$',
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Selected Date'),
+                    IconButton(
+                      onPressed: _datePicker,
+                      icon: Icon(Icons.date_range_outlined),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          Row(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(onPressed: () {}, child: Text('Save Expense')),
+            ],
           ),
         ],
       ),
