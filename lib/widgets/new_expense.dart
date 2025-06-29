@@ -2,8 +2,8 @@ import 'package:expense_tracker/core/models/expense_model.dart';
 import 'package:flutter/material.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
-
+  const NewExpense({super.key, required this.onAddExpense});
+  final void Function(ExpenseModel expenseModel) onAddExpense;
   @override
   State<NewExpense> createState() => _NewExpenseState();
 }
@@ -14,6 +14,40 @@ class _NewExpenseState extends State<NewExpense> {
   final _dateControllers = TextEditingController();
   DateTime? _selectedDate;
   Category _selectedCategory = Category.leisure;
+
+  void _submitExpenseData() {
+    final enteredAmount = double.tryParse(_amountController.text);
+    final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+    if (_titleController.text.trim().isEmpty ||
+        amountIsInvalid ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Invalid Inputs'),
+          content: Text(
+            'Please make sure a valid title, amount, date and category was entered',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Okay'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    widget.onAddExpense(
+      ExpenseModel(
+        title: _titleController.text,
+        amount: enteredAmount,
+        date: _selectedDate!,
+        category: _selectedCategory,
+      ),
+    );
+    Navigator.pop(context);
+  }
 
   void _datePicker() async {
     final now = DateTime.now();
@@ -39,7 +73,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsGeometry.all(16),
+      padding: EdgeInsetsGeometry.fromLTRB(16, 48, 16, 16),
       child: Column(
         children: [
           TextField(
@@ -106,7 +140,10 @@ class _NewExpenseState extends State<NewExpense> {
                 onPressed: () => Navigator.pop(context),
                 child: Text('Cancel'),
               ),
-              ElevatedButton(onPressed: () {}, child: Text('Save Expense')),
+              ElevatedButton(
+                onPressed: _submitExpenseData,
+                child: Text('Save Expense'),
+              ),
             ],
           ),
         ],

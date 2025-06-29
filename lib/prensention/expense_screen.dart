@@ -12,7 +12,7 @@ class ExpenseScreen extends StatefulWidget {
 class _ExpenseScreenState extends State<ExpenseScreen> {
   final List<ExpenseModel> _registeredExpensed = [
     ExpenseModel(
-      title: 'FLutter Course',
+      title: 'Flutter Course',
       amount: 19.99,
       date: DateTime.now(),
       category: Category.work,
@@ -25,7 +25,17 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     ),
   ];
   void _openAddExpenseModal() {
-    showModalBottomSheet(context: context, builder: (ctx) => NewExpense());
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => NewExpense(onAddExpense: _addExpense),
+    );
+  }
+
+  void _addExpense(ExpenseModel expenseModel) {
+    setState(() {
+      _registeredExpensed.add(expenseModel);
+    });
   }
 
   @override
